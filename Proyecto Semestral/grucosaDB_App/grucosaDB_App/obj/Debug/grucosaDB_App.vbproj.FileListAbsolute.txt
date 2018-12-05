@@ -1,0 +1,12 @@
+C:\Users\Eliecer\Documents\UTP\3 año\II Semestre\Base de Datos II\Proyecto Semestral\grucosaDB_App\grucosaDB_App\bin\Debug\grucosaDB_App.exe.config
+C:\Users\Eliecer\Documents\UTP\3 año\II Semestre\Base de Datos II\Proyecto Semestral\grucosaDB_App\grucosaDB_App\bin\Debug\grucosaDB_App.exe
+C:\Users\Eliecer\Documents\UTP\3 año\II Semestre\Base de Datos II\Proyecto Semestral\grucosaDB_App\grucosaDB_App\bin\Debug\grucosaDB_App.pdb
+C:\Users\Eliecer\Documents\UTP\3 año\II Semestre\Base de Datos II\Proyecto Semestral\grucosaDB_App\grucosaDB_App\bin\Debug\grucosaDB_App.xml
+C:\Users\Eliecer\Documents\UTP\3 año\II Semestre\Base de Datos II\Proyecto Semestral\grucosaDB_App\grucosaDB_App\obj\Debug\grucosaDB_App.vbprojAssemblyReference.cache
+C:\Users\Eliecer\Documents\UTP\3 año\II Semestre\Base de Datos II\Proyecto Semestral\grucosaDB_App\grucosaDB_App\obj\Debug\grucosaDB_App.Form1.resources
+C:\Users\Eliecer\Documents\UTP\3 año\II Semestre\Base de Datos II\Proyecto Semestral\grucosaDB_App\grucosaDB_App\obj\Debug\grucosaDB_App.Resources.resources
+C:\Users\Eliecer\Documents\UTP\3 año\II Semestre\Base de Datos II\Proyecto Semestral\grucosaDB_App\grucosaDB_App\obj\Debug\grucosaDB_App.vbproj.GenerateResource.cache
+C:\Users\Eliecer\Documents\UTP\3 año\II Semestre\Base de Datos II\Proyecto Semestral\grucosaDB_App\grucosaDB_App\obj\Debug\grucosaDB_App.vbproj.CoreCompileInputs.cache
+C:\Users\Eliecer\Documents\UTP\3 año\II Semestre\Base de Datos II\Proyecto Semestral\grucosaDB_App\grucosaDB_App\obj\Debug\grucosaDB_App.exe
+C:\Users\Eliecer\Documents\UTP\3 año\II Semestre\Base de Datos II\Proyecto Semestral\grucosaDB_App\grucosaDB_App\obj\Debug\grucosaDB_App.xml
+C:\Users\Eliecer\Documents\UTP\3 año\II Semestre\Base de Datos II\Proyecto Semestral\grucosaDB_App\grucosaDB_App\obj\Debug\grucosaDB_App.pdb
