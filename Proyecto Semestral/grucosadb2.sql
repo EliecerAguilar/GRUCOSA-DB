@@ -221,12 +221,186 @@ CREATE TABLE tipo_proveedor(
     FOREIGN KEY (id) REFERENCES proveedores(id),
     descripcion VARCHAR(40)
 );
+
+CREATE PROCEDURE SPI_tipo_proveedor(@id VARCHAR(15),@descr VARCHAR(40))AS
+BEGIN
+        INSERT INTO tipo_proveedor VALUES(@id,@descr);
+END
+GO
+
 /*INSERCION DE DATOS EN LA TABLA TIPOS DE PROVEEDOR*/
-insert into tipo_proveedor values('78662921','cilindros de gases para soldadura');
-insert into tipo_proveedor values('5109','Herramienta Electricas'),('5109','Mantenimiento');
-insert into tipo_proveedor values('5260','Herramienta Ferreteria'),('5260','accesorio de seguridad');
-insert into tipo_proveedor values('230391','Pintura'),('230391','accesoriospara pintar');
-insert into tipo_proveedor values('78662921*','Maquinas de soldar'),('78662921*','Accesorios para el soldador');
-insert into tipo_proveedor values('gr034','Herramientas electricas'),('gr034','Accesorios de seguridad'),('gr034','ferreteria');
+EXEC SPI_tipo_proveedor '78662921','cilindros de gases para soldadura'
+EXEC SPI_tipo_proveedor '5109','Herramienta Electricas'
+EXEC SPI_tipo_proveedor  '5109','Mantenimiento'
+EXEC SPI_tipo_proveedor '5260','Herramienta Ferreteria'
+EXEC SPI_tipo_proveedor  '5260','accesorio de seguridad'
+EXEC SPI_tipo_proveedor '230391','Pintura'
+EXEC SPI_tipo_proveedor  '230391','accesoriospara pintar'
+EXEC SPI_tipo_proveedor '78662921*','Maquinas de soldar'
+EXEC SPI_tipo_proveedor  '78662921*','Accesorios para el soldador'
+EXEC SPI_tipo_proveedor 'gr034','Herramientas electricas'
+EXEC SPI_tipo_proveedor 'gr034','Accesorios de seguridad'
+EXEC SPI_tipo_proveedor 'gr034','ferreteria'
+GO
+/*tabla de planillas*/
+
+CREATE TABLE planilla(
+	noPlanilla INT PRIMARY  KEY,
+    desde DATE,
+    hasta DATE,
+    diaPago DATE,
+    nombreProyecto VARCHAR(40)
+);
+
+CREATE PROCEDURE SPI_planilla(@noPlan INT,@desde DATE,@hasta DATE,@diaP DATE,@nomProy VARCHAR(40))AS
+BEGIN
+        INSERT INTO planilla VALUES(@noPlan,@desde,@hasta,@diaP,@nomProy);
+END
+GO
+/*INSERCION DATOS DE LA TABLA PLANILLA*/
+EXEC SPI_planilla 6,' 2014-07-30','2014-08-12','2014-08-16','MINI MALL'
+EXEC SPI_planilla 4,'2014-09-24','2014-10-07','2014-10-11','PERLA MAR'
+GO
+
+/*CREACION DE LA TABLA DE DATOS DE LA PLANILLA*/
+CREATE TABLE datos_planilla(
+	numPlanilla INT,
+    FOREIGN KEY (numPlanilla) REFERENCES planilla(noPlanilla),
+    noEmpleado VARCHAR(11),
+    ocupacion VARCHAR(20) default 'CALIFICADO',
+    nombre VARCHAR(30),
+    apellido VARCHAR(30),
+    noSeguro VARCHAR(10),
+    cedula VARCHAR(15),/*DATOS A SOLICITAR EN EL PROCEDURE*/    
+    sdoFijo FLOAT default NULL,
+    RXH FLOAT default 0,
+    IR VARCHAR(4) default 'D',
+    Dp INT default 0,
+    HReg FLOAT default 0,
+    HExt FLOAT default 0,
+    SalReg FLOAT default 0,
+    salExt FLOAT default 0,
+    Cdecuc FLOAT default 0,
+    Sdeduc FLOAT default 0,
+    I_R FLOAT default 0,
+    vida FLOAT default 2.25,
+    SE FLOAT default 0,
+    sindi FLOAT default 0,
+    SS FLOAT default 0,
+    Descr FLOAT default 0,
+    Pprod FLOAT default 0,
+    Ausenc FLOAT default NULL,
+    SalBruto FLOAT default 0,
+    SalNeto FLOAT default 0,
+    FOREIGN KEY (cedula) REFERENCES colaboradores(cedula)
+);
+
+ALTER PROCEDURE SPI_dat_plan(
+    @numPlan INT,@ced VARCHAR(15),@sdoFijo FLOAT =0,@RxH FLOAT = 0,
+    @ir VARCHAR(4)='D',@DP INT = 0,@HReg FLOAT=0,@HExt FLOAT=0,
+    @salExt FLOAT=0,@Cdeduc FLOAT=0,@Sdeduc FLOAT=0,@I_R FLOAT=0,   
+    @descr FLOAT=0,@Pprod FLOAT=0,@aunse FLOAT=0
+)AS
+BEGIN
+        DECLARE @salReg FLOAT =0;
+        DECLARE @vida FLOAT =2.25;
+        DECLARE @SE FLOAT=0;
+        DECLARE @sindi FLOAT=0;
+        DECLARE @salB FLOAT =0;
+        DECLARE @salN FLOAT =0;
+        DECLARE @ss FLOAT=0;
+
+        --CALCULO DE SALARIO NORMAL
+        SELECT @salReg = @RxH * @HReg;
+        --CALCULO DE SALARIO BRUTO
+        SELECT @salB = @salReg + @salExt + @Cdeduc + @Sdeduc;
+        --calculo de seguro social
+        SELECT @ss = (@salB-@Sdeduc+@Cdeduc)*0.0975;
+        --calculo de seguro educativo
+        SELECT @SE =(@salB-@Sdeduc+@Cdeduc) *0.0125;
+        -- calculo descuento de sindicato
+        SELECT @sindi = (@salB-@Sdeduc+@Cdeduc) * 0.02;
+        --calculo de salario neto
+        SELECT @salN = @salB -@ss-@sindi-@SE-@vida;
+
+        INSERT INTO datos_planilla SELECT @numPlan,C.noEmpleado,C.ocupacion,C.nombre,
+        C.apellido,C.noSeguro,@ced,NULL,@RxH,@ir,@DP,@HReg,@HExt,@salReg,@salExt,
+        @Cdeduc,@Sdeduc,@I_R,@vida,@SE,@sindi,@SS,@descr,@Pprod,@aunse,@salB,@salN
+        FROM colaboradores AS C WHERE C.cedula = @ced;
 
 
+END
+GO
+--exec planilla, cedula,salariofijo,pagoxhora,ir,dp,horaregular,horaextras,salextra,condeduc,sindeduc,i/r,desc,pprod,ausen
+EXEC SPI_dat_plan 4,'08-00700-000980',DEFAULT,5,DEFAULT,0,70,3,18.76,0,80
+EXEC SPI_dat_plan 4,'08-00303-000530',DEFAULT,4,DEFAULT,0,79,6,30
+EXEC SPI_dat_plan 4,'08-00748-000814',DEFAULT,4,DEFAULT,0,77,4,20
+EXEC SPI_dat_plan 4,'08-00340-000619',DEFAULT,3,DEFAULT,0,69.50,0,0,0
+EXEC SPI_dat_plan 4,'08-00881-000230',DEFAULT,3,DEFAULT,0,55.50,0,0,0,48
+EXEC SPI_dat_plan 4,'08-00701-001844',DEFAULT,4,DEFAULT,0,70.50,3,15,0,64
+EXEC SPI_dat_plan 4,'08-00365-000108',DEFAULT,4,DEFAULT,0,63,2,10
+GO
+
+/*----------------------------------------------------------------------------------------------------------------------------------------------*/
+EXEC SPI_dat_plan 6,'09-00102-000049',DEFAULT,4,DEFAULT,0,93,16,80
+EXEC SPI_dat_plan 6,'09-00734-002480',DEFAULT,4,DEFAULT,0,85,20,108.5
+EXEC SPI_dat_plan 6,'08-00768-000667',DEFAULT,4,DEFAULT,0,93,24,145
+EXEC SPI_dat_plan 6,'04-00242-001004',DEFAULT,4,DEFAULT,0,93,28,165,0,67	
+EXEC SPI_dat_plan 6,'09-00744-001365',DEFAULT,3,DEFAULT,0,93,28,123.76
+EXEC SPI_dat_plan 6,'08-00912-001367',DEFAULT,3,DEFAULT,0,93,26,116.26
+EXEC SPI_dat_plan 6,'08-00710-000488',DEFAULT,4,DEFAULT,0,93,16,80
+EXEC SPI_dat_plan 6,'08-00904-002049',DEFAULT,3,DEFAULT,0,85,21,97.13
+GO
+
+/*----------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*MUESTRA SOLO LA PLANILLA DE EL NUMERO DE PLANILLA INGRESADO*/
+CREATE VIEW planillas AS SELECT * FROM datos_planilla;
+
+CREATE PROCEDURE mostrar_planilla(@noPlanilla INT)AS
+BEGIN
+		select * from planillas AS P where P.numPlanilla=@noPlanilla;
+END
+GO
+
+/*VISTA PARA MOSTRAR CUALQUIR TIPO DE PROVEEDOR REGISTRADO*/
+CREATE VIEW proved AS SELECT P.nombre, P.id AS numero_de_cuenta, T.descripcion FROM proveedores AS P
+INNER JOIN tipo_proveedor AS T ON P.id = T.id;
+
+CREATE PROCEDURE mostrar_proveedor(@tipo_proveedor VARCHAR(40))AS
+BEGIN
+		SELECT * FROM proved AS P where P.descripcion like'%'+(@tipo_proveedor)+'%';
+END
+GO
+
+
+/*view de candidatos se muestran segun el tipo de ocupacion o la cedula*/
+create view tip_cand as select * from candidatos;
+
+CREATE PROCEDURE tipo_candidatos(@ocupacion VARCHAR(20) = NULL,@ced VARCHAR(15) = NULL)AS
+BEGIN
+		SELECT * FROM tip_cand WHERE (tip_cand.ocupacion LIKE '%'+(@ocupacion)+'%') OR (tip_cand.cedula LIKE '%'+(@ced)+'%') ;
+END
+GO
+
+
+/*vista solo para el proyecto green garden*/
+CREATE VIEW adendas_desc AS SELECT * FROM descripcion_adendas;
+
+CREATE PROCEDURE ad_desc(@cod_adenda VARCHAR(10))AS
+BEGIN
+		SELECT descripcion,cantidad,unidad,codigo AS codigo_del_producto,costo_unitario,total_presupuesto 
+		FROM adendas_desc where cod_adenda LIKE '%'+(@cod_adenda)+'%';
+END
+GO
+
+CREATE VIEW proyec_ingenieria AS SELECT * FROM proyectos;
+
+CREATE PROCEDURE proy_descr(@nomProyec VARCHAR(40)) AS
+BEGIN
+		SELECT P.nombre_proyecto, P.descripcion_proyecto,P.descripcion_proyecto,P.fecha_inicio,P.fecha_fin,P.status_proyecto AS Estatus,P.multa FROM proyec_ingenieria AS P
+		WHERE P.nombre_proyecto LIKE '%'+(@nomProyec)+'%';
+END
+GO
+
+--create view todoAdendas as SELECT * FROM adendas; #humm .....
